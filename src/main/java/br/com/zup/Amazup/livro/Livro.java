@@ -15,6 +15,8 @@ public class Livro {
     private Genero genero;
     @ManyToOne
     private Autor autor;
+    @Column(columnDefinition = "DECIMAL(10,2)")
+    private double preco;
 
     public Livro() {
     }
@@ -49,5 +51,13 @@ public class Livro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(double preco) {
+        this.preco = preco;
     }
 }
