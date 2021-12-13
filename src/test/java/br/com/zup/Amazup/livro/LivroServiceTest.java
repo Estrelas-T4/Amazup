@@ -3,6 +3,8 @@ package br.com.zup.Amazup.livro;
 import br.com.zup.Amazup.autor.Autor;
 import br.com.zup.Amazup.enums.Genero;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,7 +15,7 @@ public class LivroServiceTest {
     private LivroRepository livroRepository;
 
     @Autowired
-    private LivroServiceTest livroServiceTest;
+    private LivroService livroService;
 
     private Livro livro;
     private Autor autor;
@@ -32,4 +34,12 @@ public class LivroServiceTest {
         livro.setAutor(autor);
     }
 
+    @Test
+    public void testarCadastrodeLivro(){
+        Mockito.when(livroRepository.save(Mockito.any(Livro.class))).thenReturn(livro);
+
+        Livro livroObjeto = livroService.salvarLivro(livro);
+
+        Mockito.verify(livroRepository, Mockito.times(1)).save(Mockito.any(Livro.class));
+    }
 }
