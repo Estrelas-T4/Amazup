@@ -1,6 +1,7 @@
 package br.com.zup.Amazup.livro;
 
 import br.com.zup.Amazup.autor.Autor;
+import br.com.zup.Amazup.componentes.UriContrutor;
 import br.com.zup.Amazup.enums.Genero;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(LivroController.class)
+@WebMvcTest({LivroController.class, UriContrutor.class})
 public class LivroControllerTest {
     @MockBean
     private LivroService livroService;
@@ -56,4 +57,7 @@ public class LivroControllerTest {
                                 .value("http://localhost:8080/livros/"+livro.getId())
                 );
     }
+
+    //Validações: Autor Not Null, Preço Not Null, Nome do Livro Not Null Not blank,
+    // Limitar casas decimais no preço, preço não pode menor que 0, genero Not NULL, genero Valido
 }

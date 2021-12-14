@@ -42,4 +42,6 @@ public class LivroServiceTest {
 
         Mockito.verify(livroRepository, Mockito.times(1)).save(Mockito.any(Livro.class));
     }
+
+    //Validações: Não Cadastrar o mesmo Livro para o mesmo autor 2 vezes
 }
