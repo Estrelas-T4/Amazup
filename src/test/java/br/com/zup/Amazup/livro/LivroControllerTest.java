@@ -4,6 +4,7 @@ import br.com.zup.Amazup.autor.Autor;
 import br.com.zup.Amazup.componentes.Conversor;
 import br.com.zup.Amazup.componentes.UriContrutor;
 import br.com.zup.Amazup.enums.Genero;
+import br.com.zup.Amazup.livro.dtos.LivroDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +49,9 @@ public class LivroControllerTest {
         livro.setAutor(autor);
     }
 
-    private ResultActions relizarRequisicao(Object object, int statusEsperado, String httpVerbo) throws Exception {
+    private ResultActions relizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
         String json = objectMapper.writeValueAsString(object);
-        URI uri = UriComponentsBuilder.fromPath("/livros").build().toUri();
+        URI uri = UriComponentsBuilder.fromPath("/livros"+complemento).build().toUri();
 
         return mockMvc.perform(MockMvcRequestBuilders.request(httpVerbo, uri)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
@@ -62,7 +63,7 @@ public class LivroControllerTest {
         Mockito.when(livroService.salvarLivro(Mockito.any(Livro.class))).thenReturn(livro);
         String json = objectMapper.writeValueAsString(livro);
 
-        ResultActions resultadoDaRequisicao = relizarRequisicao(livro, 201, "POST");
+        ResultActions resultadoDaRequisicao = relizarRequisicao(livro, 201, "POST", "");
         resultadoDaRequisicao.andExpect(
                 MockMvcResultMatchers.jsonPath("$.vitrine")
                         .value("http://localhost:8080/livros/"+livro.getId())
@@ -75,7 +76,7 @@ public class LivroControllerTest {
         Mockito.when(livroService.salvarLivro(Mockito.any(Livro.class))).thenReturn(livro);
         livro.setNome("       ");
 
-        ResultActions resultado = relizarRequisicao(livro, 422,"POST");
+        ResultActions resultado = relizarRequisicao(livro, 422,"POST", "");
 
         Mockito.verify(livroService, Mockito.times(0)).salvarLivro(Mockito.any(Livro.class));
 
@@ -86,7 +87,7 @@ public class LivroControllerTest {
         Mockito.when(livroService.salvarLivro(Mockito.any(Livro.class))).thenReturn(livro);
         livro.setAutor(null);
 
-        ResultActions resultado = relizarRequisicao(livro, 422, "POST");
+        ResultActions resultado = relizarRequisicao(livro, 422, "POST", "");
 
         Mockito.verify(livroService, Mockito.times(0)).salvarLivro(Mockito.any(Livro.class));
 
@@ -97,12 +98,24 @@ public class LivroControllerTest {
         Mockito.when(livroService.salvarLivro(Mockito.any(Livro.class))).thenReturn(livro);
         livro.setGenero(null);
 
-        ResultActions resultado = relizarRequisicao(livro, 422, "POST");
+        ResultActions resultado = relizarRequisicao(livro, 422, "POST", "");
 
         Mockito.verify(livroService, Mockito.times(0)).salvarLivro(Mockito.any(Livro.class));
 
     }
 
+    @Test
+    public void testarBuscaDeLivroPorID() throws Exception {
+        Mockito.when(livroService.buscarLivroPorId(Mockito.anyInt())).thenReturn(livro);
+
+        ResultActions resultadoDaRequisicao = relizarRequisicao(null, 200, "GET", "/1");
+        resultadoDaRequisicao
+                .andExpect(
+                        MockMvcResultMatchers
+                                .jsonPath("$.autor.uri").value("http://localhost:8080/livros/1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value(livro.getNome()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.genero").value(livro.getGenero().toString()));
+    }
     //Validações: Autor Not Null, Preço Not Null, Nome do Livro Not Null Not blank,
     // Limitar casas decimais no preço, preço não pode menor que 0, genero Not NULL, genero Valido
 }
