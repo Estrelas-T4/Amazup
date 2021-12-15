@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -21,10 +22,12 @@ public class LivroController {
     private LivroService livroService;
     @Autowired
     private UriContrutor contrutor;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public HashMap<String, URI> cadastrarLivro(@RequestBody Livro livro){
+    public HashMap<String, URI> cadastrarLivro(@RequestBody @Valid Livro livro){
         Livro livroObjeto = livroService.salvarLivro(livro);
 
         URI enderecoVitrini = contrutor.criarUri("/livros", livro.getId());
@@ -37,10 +40,9 @@ public class LivroController {
     @GetMapping("/{id}")
     public LivroDTO exibirLivro(@PathVariable int id){
         Livro livro = livroService.buscarLivroPorId(id);
-        ModelMapper modelMapper = new ModelMapper();
-
         LivroDTO livroDTO = modelMapper.map(livro, LivroDTO.class);
         livroDTO.getAutor().setUri(contrutor.criarUri("/livros",""+livro.getAutor().getId()));
+
         return livroDTO;
     }
 }

@@ -4,16 +4,21 @@ import br.com.zup.Amazup.autor.Autor;
 import br.com.zup.Amazup.enums.Genero;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank
     private String nome;
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Genero genero;
     @ManyToOne
+    @NotNull
     private Autor autor;
     @Column(columnDefinition = "DECIMAL(10,2)")
     private double preco;
